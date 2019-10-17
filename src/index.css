@@ -7,7 +7,33 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.navbar-nav.no-collapse {
+  flex-direction: row;
+}
+
+.navbar-nav .nav-link {
+  margin-left: 1.4rem;
+}
+
 button.nav-link {
   background-color:transparent;
   border-width: 0px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.nav-link svg {
+  font-size: 22px
+}
+
+.bg-dark {
+  background-color: #f39c12 !important;
+}
+
+.card-title {
+  font-weight: 500;
+  font-size:110%;
+}
+.card-body {
+  padding: .75rem;
 }

@@ -1,8 +1,7 @@
 import React, { Dispatch } from 'react';
 import { Route, Link } from 'react-router-dom';
-import { Collapse, Navbar, NavbarToggler, Nav, NavItem } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+
+import Header from './components/header';
 
 import './App.css';
 import LoggedInHandler from './components/auth/logged-in'
@@ -35,6 +34,8 @@ interface AppActions {
   doSignout: () => void
 }
 
+
+
 class App extends React.Component<AppProps & AppActions, { isOpen :boolean }> {
   state = {
     isOpen: false
@@ -58,19 +59,7 @@ class App extends React.Component<AppProps & AppActions, { isOpen :boolean }> {
 
     return (
       <React.Fragment>
-        <Navbar color='dark' dark expand="md">
-          <Link to='/' className='navbar-brand'>SITE_NAME</Link>
-          <NavbarToggler onClick={this.toggle} />
-          <Collapse isOpen={this.state.isOpen} navbar>
-            <Nav className='ml-auto' navbar>
-              <NavItem>
-                {isLoadingUser
-                  ? <span className='navbar-text'><FontAwesomeIcon icon={faSpinner} spin /></span>
-                  : <button className='nav-link' onClick={this.toggleAuth}>Sign {user && user.token_type ? 'out' : 'in'}</button>
-              }</NavItem>
-            </Nav>
-          </Collapse>
-        </Navbar>
+        <Header user={user} isLoadingUser={isLoadingUser} doSignin={this.props.doSignin} doSignout={this.props.doSignout} />
         <Route exact path='/loggedIn' component={LoggedInHandler} />
         <Route exact path='/' component={MainPage} />
         <Route exact path='/admin' component={RestrictedPage} />

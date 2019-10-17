@@ -15,6 +15,7 @@ const envConfig = window.envConfig || {}
 export const initialState :ConfigState = {
   apis: {
     accounts: 'http://localhost:5100',
+    data: 'http://localhost:5300',
     messaging: 'http://localhost:5200',
     ...envConfig.apis
   }
