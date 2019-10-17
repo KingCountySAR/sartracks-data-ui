@@ -1,0 +1,29 @@
+.navbar {
+  align-items: baseline;
+}
+
+.navbar-nav.no-collapse {
+  flex-direction: row;
+}
+
+.navbar-nav button.nav-link {
+  background-color:transparent;
+  border-width: 0px;
+}
+.navbar-nav .nav-item {
+  padding: 0 .7rem 0 .7rem;
+}
+.navbar-nav:first-child {
+  margin-left: -.7rem;
+}
+.navbar-nav:last-child {
+  margin-right: -.7rem;
+}
+
+.nav-link svg {
+  font-size: 22px
+}
+
+.bg-dark {
+  background-color: #f39c12 !important;
+}

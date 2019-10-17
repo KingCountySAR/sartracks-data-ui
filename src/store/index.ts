@@ -4,18 +4,20 @@ import { createLogger } from 'redux-logger';
 
 import { reducer as oidc, initialState as oidcInit } from './oidc';
 import { reducer as config, initialState as configInit } from './config';
-
+import { reducer as ui, initialState as uiInit } from './ui';
 
 const rootReducer = combineReducers({
   config,
-  oidc
+  oidc,
+  ui
 })
 
 export type StoreState = ReturnType<typeof rootReducer>
 
 const initState :StoreState = {
   oidc: oidcInit,
-  config: configInit
+  config: configInit,
+  ui: uiInit
 }
 
 const middleware :Middleware[] = [

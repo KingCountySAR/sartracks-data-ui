@@ -1,12 +1,15 @@
 import React from 'react'
 import { Navbar, Nav, NavItem, UncontrolledPopover, Card, CardBody, CardTitle, CardSubtitle, CardText, Button } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 //import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { faUserCircle } from '@fortawesome/free-regular-svg-icons';
 import { Link } from 'react-router-dom';
 import { User } from 'oidc-client';
 import MemberPhoto from './member-photo';
+
+import './header.css';
 
 const HeaderAccount :React.FC<{ user?: User, doSignin: () => void, doSignout: () => void }> = ({ user, doSignin, doSignout }) => (
   <React.Fragment>
@@ -35,9 +38,13 @@ const HeaderAccount :React.FC<{ user?: User, doSignin: () => void, doSignout: ()
   </React.Fragment>
 )
 
-const Header :React.FC<{ user?: User, isLoadingUser? :boolean, doSignin:() => void, doSignout: () => void}> = ({ user, isLoadingUser, doSignin, doSignout }) => (
+const Header :React.FC<{ user?: User, isLoadingUser? :boolean, hasDrawer :boolean, showDrawer: (show: boolean) => void, doSignin:() => void, doSignout: () => void}> =
+ ({ user, isLoadingUser, hasDrawer, showDrawer, doSignin, doSignout }) => (
   <Navbar color='dark' dark expand="md">
-    <Link to='/' className='navbar-brand'>King County <span className='d-none d-sm-inline'>Search and Rescue</span><span className='d-sm-none'>SAR</span></Link>
+    { hasDrawer ? <Nav className='no-collapse' navbar>
+      <NavItem><button className='nav-link' onClick={() => showDrawer(true)}><FontAwesomeIcon icon={faBars} /></button></NavItem>
+    </Nav> : null }
+    <Link to='/' className='navbar-brand'>King County <span className='d-none d-md-inline'>Search and Rescue</span><span className='d-md-none'>SAR</span></Link>
     <Nav className='ml-auto no-collapse' navbar>
       {isLoadingUser 
         ? <NavItem><button className='nav-link'><FontAwesomeIcon icon={faSpinner} spin /></button></NavItem> 

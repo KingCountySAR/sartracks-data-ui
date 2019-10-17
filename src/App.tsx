@@ -1,6 +1,9 @@
 import React, { Dispatch } from 'react';
 import { Route, Link } from 'react-router-dom';
+//@ts-ignore
+import useDimensions from 'react-use-dimensions';
 
+import Drawer from './components/drawer';
 import Header from './components/header';
 
 import './App.css';
@@ -9,6 +12,7 @@ import { AuthRoute } from './components/auth/AuthRoute';
 import { StoreState } from './store';
 import { connect } from 'react-redux';
 import { OidcState, Actions as oidcActions } from './store/oidc';
+import { Actions as uiActions } from './store/ui';
 import { User } from 'oidc-client';
 
 const MainPageInner :React.FC<{oidc: OidcState}> = ({oidc}) => (
@@ -28,54 +32,47 @@ const RestrictedPage = connect((store :StoreState) => ({ oidc: store.oidc }))(Re
 interface AppProps {
   user? :User
   isLoadingUser? :boolean
+  inDrawer :boolean
 }
 interface AppActions {
   doSignin: () => void,
-  doSignout: () => void
+  doSignout: () => void,
+  showDrawer: (show :boolean) => void
 }
 
 
-
-class App extends React.Component<AppProps & AppActions, { isOpen :boolean }> {
-  state = {
-    isOpen: false
-  }
-
-  toggleAuth = () => {
-    const { user, doSignin, doSignout } = this.props
-    if (user && user.token_type) {
-      doSignout()
-    } else {
-      doSignin()
-    }
-  }
-
-  toggle = () => {
-    this.setState({isOpen: !this.state.isOpen})
-  }
-
-  render() {
-    const { user, isLoadingUser } = this.props
-
-    return (
-      <React.Fragment>
-        <Header user={user} isLoadingUser={isLoadingUser} doSignin={this.props.doSignin} doSignout={this.props.doSignout} />
-        <Route exact path='/loggedIn' component={LoggedInHandler} />
-        <Route exact path='/' component={MainPage} />
-        <Route exact path='/admin' component={RestrictedPage} />
-      </React.Fragment>
-    );
-  }
+const App :React.FC<AppProps & AppActions> = (props) => {
+  const { user, isLoadingUser, showDrawer, inDrawer, doSignin, doSignout } = props
+  const [ref, { width }] = useDimensions();
+  const fixedDrawer = width >= 768
+  console.log(width, fixedDrawer)
+  return (
+    <React.Fragment>
+      <Header user={user} isLoadingUser={isLoadingUser} hasDrawer={!fixedDrawer} showDrawer={showDrawer} doSignin={doSignin} doSignout={doSignout} />
+      <div ref={ref} className='main-container'>
+        <Drawer fixed={fixedDrawer} open={inDrawer} showDrawer={showDrawer}>
+          Hi there!
+        </Drawer>
+        <div>
+          <Route exact path='/loggedIn' component={LoggedInHandler} />
+          <Route exact path='/' component={MainPage} />
+          <Route exact path='/admin' component={RestrictedPage} />
+        </div>
+      </div>
+    </React.Fragment>
+  );
 }
 
 const storeToProps = (store :StoreState) :AppProps => ({
     user: store.oidc.user,
-    isLoadingUser: store.oidc.isLoadingUser
+    isLoadingUser: store.oidc.isLoadingUser,
+    inDrawer: store.ui.inDrawer
 })
 
 const dispatchToProps = (dispatch :Dispatch<any>) :AppActions => ({
   doSignin: () => dispatch(oidcActions.doSignin()),
-  doSignout: () => dispatch(oidcActions.doSignout())
+  doSignout: () => dispatch(oidcActions.doSignout()),
+  showDrawer: (show: boolean) => dispatch(uiActions.showDrawer(show))
 })
 
 export default connect(storeToProps, dispatchToProps)(App)

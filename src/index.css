@@ -7,27 +7,14 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-.navbar-nav.no-collapse {
-  flex-direction: row;
+html, body {
+  height: 100%;
 }
 
-.navbar-nav .nav-link {
-  margin-left: 1.4rem;
-}
-
-button.nav-link {
-  background-color:transparent;
-  border-width: 0px;
-  padding-top: 0;
-  padding-bottom: 0;
-}
-
-.nav-link svg {
-  font-size: 22px
-}
-
-.bg-dark {
-  background-color: #f39c12 !important;
+#root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .card-title {
