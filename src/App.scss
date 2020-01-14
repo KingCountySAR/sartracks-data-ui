@@ -1,0 +1,53 @@
+.main-container {
+  display: flex;
+  flex: 1 1 auto;
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+}
+
+.grid-paper {
+  padding: 1rem;
+  margin: .5rem;
+}
+.grid-paper.grid-paper-trim-top {
+  padding-top: 0;
+}
+
+div.no-MuiToolbar-gutters {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+.MuiFormControl-root.form-control-stacked {
+  margin-top: 2rem;
+  
+  &:first-child {
+    margin-top: 0;
+  }
+
+  .MuiFormControlLabel-root {
+    margin-top: -8px;
+    margin-bottom: -8px;
+  }
+}
+
+.row-deleting {
+  background-color: #ff5722aa;
+  opacity: 0.3;
+}
+
+.row-saving {
+  background-color: #2196f3;
+  opacity: 0.3;
+}
+
+@media (min-width: 600px) {
+  div.no-MuiToolbar-gutters {
+      padding-left: 0px;
+      padding-right: 0px;
+  }
+}

@@ -20,7 +20,7 @@ export const reducer :Reducer<UiState> = (state = initialState, action) => {
   switch (action.type) {
     case 'ui/showDrawer':
       return {...state, inDrawer: action.payload.show }
-
+    
     default:
       return state
   }

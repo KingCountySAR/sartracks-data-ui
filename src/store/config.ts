@@ -16,6 +16,7 @@ export const initialState :ConfigState = {
   apis: {
     accounts: 'http://localhost:5100',
     data: 'http://localhost:5300',
+    oldData: 'http://localhost:4944/api2',
     messaging: 'http://localhost:5200',
     ...envConfig.apis
   }

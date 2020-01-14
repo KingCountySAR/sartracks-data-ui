@@ -1,0 +1,121 @@
+ul.main-menu,
+ul.main-menu ul {
+  list-style: none;
+  padding: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+ul.main-menu {
+  min-width: 180px;
+}
+
+ul.main-menu li {
+  margin: 0;
+}
+ul.main-menu > li:nth-child(1) {
+  border-top: none;
+}
+
+ul.main-menu > li {
+  border-bottom: 1px solid #555;
+}
+
+ul.main-menu .menu-item {
+  border-radius: 0;
+  color: #ccc;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  line-height: 40px;
+  margin: 0;
+  max-height: 40px;
+  overflow: hidden;
+  padding: 0px 16px;
+  text-align: left;
+  text-decoration: none;
+  white-space: normal;
+  width: 100%;
+  margin-left: 2px;
+  border-left: solid 3px transparent;
+  text-transform: uppercase;
+}
+
+ul.main-menu .menu-item:hover,
+ul.main-menu .menu-item:focus {
+  background-color: #1e282c;
+  border-left-color: #f39c12;
+}
+
+ul.main-menu .menu-item > .menu-icon {
+  display: inline-block;
+  width: 24px;
+  height:24px;
+  min-width: 24px;
+  min-height: 24px;
+  vertical-align: middle;
+  color: #bbb;
+  margin-right:6px;
+  margin-left:-4px;
+}
+
+ul.main-menu button.menu-item {
+  color: #ccc;
+  background: #0000;
+  line-height: 40px;
+  text-align: left;
+  border: 0;
+  border-left: solid 3px transparent;
+}
+ul.main-menu button.menu-item:focus {
+  outline: 0;
+}
+
+ul.main-menu .menu-item.active {
+  color: white;
+  background-color:#1e282c;
+  border-left-color: #f39c12;
+}
+
+ul.main-menu li > ul > li > a.menu-item {
+  display: block;
+  padding: 0 16px 0 32px;
+  text-transform: none;
+  text-rendering: optimizeLegibility;
+}
+
+li.menu-toggle > ul {
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+  transition: 0.4s cubic-bezier(0.35, 0, 0.25, 1);
+  transition-property: height;
+}
+
+li.menu-toggle > button > span {
+  flex: 1 1 auto;
+}
+
+svg.toggle-icon {
+  font-size: 12px;
+  transition: transform .4s;
+}
+
+svg.toggle-icon.open {
+  transform: rotate(180deg)
+}
+
+ul.main-menu h2 {
+  display: block;
+  line-height: 32px;
+  margin: 0;
+  padding: 24px 16px 0;
+  font-size: 16px;
+  font-weight: 400;
+  text-align: left;
+  width: 100%;
+  color: rgba(255, 255, 255, 0.54)
+}
+
+ul li:first-child .menu-heading {
+  padding-top:8px;
+}

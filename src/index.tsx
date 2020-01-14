@@ -5,7 +5,10 @@ import { Provider } from 'react-redux';
 import { loadUser, OidcProvider, processSilentRenew } from 'redux-oidc';
 import axios from 'axios';
 
-import 'bootstrap/dist/css/bootstrap.min.css'
+import CssBaseline from '@material-ui/core/CssBaseline'
+import { ThemeProvider } from '@material-ui/styles'
+import theme from './theme'
+
 import './index.css';
 
 import App from './App';
@@ -59,7 +62,10 @@ function start() {
       <i style={{display:'none'}} className='fas fa-spinner' />{/*load the icon font as soon as possible */}
       <OidcProvider store={store} userManager={userManager}>
         <BrowserRouter basename='/'>
-          <App />
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <App />
+          </ThemeProvider>
         </BrowserRouter>
       </OidcProvider>
     </Provider>,

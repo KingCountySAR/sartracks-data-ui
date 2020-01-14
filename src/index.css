@@ -16,11 +16,3 @@ html, body {
   flex-direction: column;
   height: 100%;
 }
-
-.card-title {
-  font-weight: 500;
-  font-size:110%;
-}
-.card-body {
-  padding: .75rem;
-}

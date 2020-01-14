@@ -17,8 +17,10 @@
 }
 
 .drawer-pane {
-  background-color: #444;
+  background-color: #222d32;
+  color: #ffffff8a;
   min-width: 10em;
+  overflow-y: auto;
 }
 
 .drawer-container > .drawer-pane {

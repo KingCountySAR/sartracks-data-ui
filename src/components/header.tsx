@@ -1,59 +1,78 @@
 import React from 'react'
-import { Navbar, Nav, NavItem, UncontrolledPopover, Card, CardBody, CardTitle, CardSubtitle, CardText, Button } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars } from '@fortawesome/free-solid-svg-icons';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
-//import { faSearch } from '@fortawesome/free-solid-svg-icons';
-import { faUserCircle } from '@fortawesome/free-regular-svg-icons';
-import { Link } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom'
+import { AppBar, Toolbar, Button, Typography, Link, IconButton, Popover, useMediaQuery, useTheme, Card, CardActions, CardContent, CircularProgress } from './material'
+import AccountCircle from '@material-ui/icons/AccountCircleOutlined'
+import SearchIcon from '@material-ui/icons/Search'
+import MenuIcon from '@material-ui/icons/Menu'
 import { User } from 'oidc-client';
 import MemberPhoto from './member-photo';
 
 import './header.css';
 
-const HeaderAccount :React.FC<{ user?: User, doSignin: () => void, doSignout: () => void }> = ({ user, doSignin, doSignout }) => (
-  <React.Fragment>
-    <button id="headerAccountLink" className='nav-link'><FontAwesomeIcon icon={faUserCircle} /></button>
-    {/* <button id="headerAccountLink" className='nav-link'>Sign {user && user.token_type ? 'out' : 'in'}</button> */}
-    <UncontrolledPopover trigger="legacy" placement="bottom" target="headerAccountLink" hideArrow>
-      <Card>
-        { user ? <React.Fragment>
-        {/* <CardImg top src="/assets/318x180.svg" alt="Card image cap" /> */}
-        <CardBody className='d-flex flex-column'>
-          <div className='d-flex'>
-            <MemberPhoto memberid={user.profile.memberId} />
-            <div className='d-flex flex-column' style={{marginRight:'2em'}}>
-              <CardTitle>{user.profile.name}</CardTitle>
-              <CardSubtitle>{user.profile.preferred_username}</CardSubtitle>
-              <CardText>{user.profile.email}</CardText>
-            </div>
-          </div>
-          <Button color="primary" className='center-block' size='sm' onClick={doSignout}>Sign out</Button>
-        </CardBody>
-        </React.Fragment>
-        : <CardBody className='d-flex flex-column'><CardText>You are not signed in</CardText><Button color='primary' className='center-block' size='sm' onClick={doSignin}>Sign in</Button></CardBody>
-        }
-      </Card>
-    </UncontrolledPopover>
-  </React.Fragment>
-)
+const HeaderAccount :React.FC<{ user?: User, doSignin: () => void, doSignout: () => void }> = ({ user, doSignin, doSignout }) =>{
+  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    setAnchorEl(event.currentTarget);
+  };
 
-const Header :React.FC<{ user?: User, isLoadingUser? :boolean, hasDrawer :boolean, showDrawer: (show: boolean) => void, doSignin:() => void, doSignout: () => void}> =
- ({ user, isLoadingUser, hasDrawer, showDrawer, doSignin, doSignout }) => (
-  <Navbar color='dark' dark expand="md">
-    { hasDrawer ? <Nav className='no-collapse' navbar>
-      <NavItem><button className='nav-link' onClick={() => showDrawer(true)}><FontAwesomeIcon icon={faBars} /></button></NavItem>
-    </Nav> : null }
-    <Link to='/' className='navbar-brand'>King County <span className='d-none d-md-inline'>Search and Rescue</span><span className='d-md-none'>SAR</span></Link>
-    <Nav className='ml-auto no-collapse' navbar>
-      {isLoadingUser 
-        ? <NavItem><button className='nav-link'><FontAwesomeIcon icon={faSpinner} spin /></button></NavItem> 
-        : <React.Fragment>
-          {/* {user ? <NavItem><button className='nav-link'><FontAwesomeIcon icon={faSearch} /></button></NavItem> : null} */}
-          <NavItem><HeaderAccount user={user} doSignin={doSignin} doSignout={doSignout} /></NavItem>
-        </React.Fragment>}
-    </Nav>
-  </Navbar>
-)
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? 'header-account-popover' : undefined;
+
+  return (<React.Fragment>
+    <IconButton edge="end" aria-describedby={id} onClick={handleClick} color="inherit"><AccountCircle /></IconButton>
+    <Popover id={id} open={open} anchorEl={anchorEl} onClose={handleClose}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'right'}} transformOrigin={{vertical: 'top', horizontal: 'right'}}>
+      { user
+      ? <Card>
+          <CardContent style={{display:'flex'}}>
+            <MemberPhoto memberId={user.profile.memberId} />
+            <div style={{display:'flex', flexDirection:'column', marginRight:'2em'}}>
+              <Typography variant='body1'>{user.profile.name}</Typography>
+              <Typography color='textSecondary' style={{marginBottom:'.5em'}}>{user.profile.preferred_username}</Typography>
+              <Typography variant='body2'>{user.profile.email}</Typography>
+            </div>
+          </CardContent>
+          <CardActions>
+            <Button onClick={doSignout} size="small" color='secondary'>Sign out</Button>
+          </CardActions>
+        </Card>
+      : <Card>
+          <CardContent>
+            <Typography>You are not signed in</Typography>
+          </CardContent>
+          <CardActions>
+            <Button onClick={doSignin} size="small" color='secondary'>Sign In</Button>
+          </CardActions>
+        </Card>
+      }
+    </Popover>
+  </React.Fragment>)
+}
+
+const Header :React.FC<{ user?: User, isLoadingUser? :boolean, hasDrawer :boolean,
+  showDrawer: (show: boolean) => void, showSearch: (show: boolean) => void, doSignin:() => void, doSignout: () => void}> =
+ ({ user, isLoadingUser, hasDrawer, showDrawer, showSearch, doSignin, doSignout }) => {
+  const theme = useTheme()
+  const isMd = useMediaQuery(theme.breakpoints.up('sm')) 
+  return (
+  <AppBar position="static"> {/*  color='dark' dark expand="md" */}
+    <Toolbar>
+    { !hasDrawer ? null : <IconButton edge='start' color='inherit' onClick={() => showDrawer(true)}><MenuIcon /></IconButton> }
+    <Typography variant="h6" noWrap><Link to='/' className='navbar-brand' component={RouterLink} color='inherit'>
+      King County {isMd ? <span>Search and Rescue</span> : <span>SAR</span>}
+    </Link></Typography>
+    {isLoadingUser
+      ? <CircularProgress color='inherit' size='1.5em'/>
+      : <React.Fragment>
+        { user ? <IconButton color='inherit' onClick={() => showSearch(true)}><SearchIcon /></IconButton> : null }
+        <HeaderAccount user={user} doSignin={doSignin} doSignout={doSignout} />
+      </React.Fragment>}
+    </Toolbar>
+  </AppBar>
+)}
 
 export default Header
