@@ -1,7 +1,8 @@
-import { Reducer, ActionCreator, AnyAction } from "redux";
-import { ThunkAction, ThunkDispatch } from "redux-thunk";
-import axios from "axios";
-import { StoreState } from ".";
+import { Reducer, ActionCreator, AnyAction } from "redux"
+import { ThunkAction, ThunkDispatch } from "redux-thunk"
+import axios from "axios"
+import { StoreState } from "."
+import { Actions as toastActions } from './toasts'
 
 interface OrganizationsState {
   list?: any[]
@@ -43,7 +44,6 @@ const loadList :ActionCreator<ThunkAction<void, {}, {}, AnyAction>> = () =>
 
 const loadDetail :ActionCreator<ThunkAction<void, {}, {}, AnyAction>> = (id :string, keepMessages?: boolean) =>
   async (dispatch :ThunkDispatch<{}, {}, AnyAction>, getState: () => any) :Promise<any> => {
-    console.log('loadDetail')
     const state = getState()
     dispatch({type: 'organizations/current/loading', payload: { id }})
     const [detail, reports, statuses] = await Promise.all([
@@ -59,18 +59,34 @@ const deleteStatus :ActionCreator<ThunkAction<void, StoreState, {}, AnyAction>> 
   async (dispatch :ThunkDispatch<StoreState, {}, AnyAction>, getState: () => StoreState) :Promise<any> => {
     const state = getState()
     axios.delete(`${state.config.apis.oldData}/units/${orgId}/statusabc/${id}`)
-    .then(() => dispatch({type: 'organizations/status/deleted', payload: { id }}))
-    .catch((err) => { console.log(err); dispatch(loadDetail(orgId)); dispatch({type: 'organizations/status/delete-fail', payload: { id } }); })
-      return dispatch({type: 'organizations/status/deleting', payload: { id }})
-    }
+    .then(() => {
+      dispatch({type: 'organizations/status/deleted', payload: { id }})
+      dispatch(toastActions.show('Deleted unit status', 2000, 'success'))
+    })
+    .catch((err) => {
+      console.log(err);
+      dispatch(loadDetail(orgId));
+      dispatch({type: 'organizations/status/delete-fail', payload: { id } });
+      dispatch(toastActions.show('Failed to delete status', 0, 'error'))
+    })
+    return dispatch({type: 'organizations/status/deleting', payload: { id }})
+  }
 
 const saveStatus :ActionCreator<ThunkAction<void, StoreState, {}, AnyAction>> = (orgId: string, row: OrganizationStatus) =>
   async (dispatch :ThunkDispatch<StoreState, {}, AnyAction>, getState: () => StoreState) :Promise<any> => {
     const state = getState()
     const preUrl = `${state.config.apis.oldData}/units/${orgId}/statusabc`
     const call = row.id ? axios.put(`${preUrl}/${row.id}`) : axios.post(preUrl)
-    call.then(result => dispatch({type: 'organizations/status/saved', payload: { isNew: !row.id, data: result.data }}))
-        .catch((err) => { console.log(err); dispatch(loadDetail(orgId)); dispatch({type: 'organizations/status/save-fail', payload: { data: row } }); })     
+    call.then(result => {
+          dispatch({type: 'organizations/status/saved', payload: { isNew: !row.id, data: result.data }})
+          dispatch(toastActions.show('Saved unit status', 2000, 'success'))
+        })
+        .catch((err) => {
+          console.log(err);
+          dispatch(loadDetail(orgId));
+          dispatch({type: 'organizations/status/save-fail', payload: { data: row } });
+          dispatch(toastActions.show('Failed to save status', 0, 'error'))
+    })    
     return dispatch({type: 'organizations/status/saving', payload: { data: { ...row, id: row.id || 'pending' } }})
   }
 
@@ -91,21 +107,23 @@ const getSummary = (state :OrganizationsState, id: string) => {
 }
 
 const currentReducer :Reducer<any> = (state = initialState.current, action) => {
-  const data = (action.payload || {}).data
+  if (!state) return state
+
+  const p = action.payload
   switch (action.type) {
     case 'organizations/status/saving':
 
       return { ...state, statuses: {
           ...state.statuses,
-          items: state.statuses.items.concat(data.id === 'pending' ? [data] : [])
-                                     .map((f :OrganizationStatus) => (f.id === data.id) ? { ...f, _saving: true } : f)
+          items: state.statuses.items.concat(p.data.id === 'pending' ? [p.data] : [])
+                                     .map((f :OrganizationStatus) => (f.id === p.data.id) ? { ...f, _saving: true } : f)
         }
       }
 
     case 'organizations/status/saved':
       return { ...state, statuses: {
           ...state.statuses,
-          items: state.statuses.items.map((f :OrganizationStatus) => (f.id === data.id || f.id === 'pending') ? data : f)
+          items: state.statuses.items.map((f :OrganizationStatus) => (f.id === p.data.id || f.id === 'pending') ? p.data : f)
         }
       }
 
@@ -113,28 +131,28 @@ const currentReducer :Reducer<any> = (state = initialState.current, action) => {
       return { ...state, statuses: {
           ...state.statuses,
           items: state.statuses.items.filter((f :OrganizationStatus) => (f.id !== 'pending'))
-                                     .map((f :OrganizationStatus) => (f.id === data.id) ? { ...f, _saving: undefined } : f)
+                                     .map((f :OrganizationStatus) => (f.id === p.data.id) ? { ...f, _saving: undefined } : f)
         }
       }
 
     case 'organizations/status/deleting':
       return { ...state, statuses: {
           ...state.statuses,
-          items: state.statuses.items.map((f: OrganizationStatus) => (f.id === data.id) ? { ...f, _deleting: true } : f)
+          items: state.statuses.items.map((f: OrganizationStatus) => (f.id === p.id) ? { ...f, _deleting: true } : f)
         }
       }
 
     case 'organizations/status/deleted':
       return { ...state, statuses: {
           ...state.statuses,
-          items: state.statuses.items.filter((f: OrganizationStatus) => f.id !== data.id)
+          items: state.statuses.items.filter((f: OrganizationStatus) => f.id !== p.id)
         }
       }
 
     case 'organizations/status/delete-fail':
       return { ...state, statuses: {
           ...state.statuses,
-          items: state.statuses.items.map((f: OrganizationStatus) => (f.id === data.id) ? { ...f, _deleting: undefined } : f)
+          items: state.statuses.items.map((f: OrganizationStatus) => (f.id === p.id) ? { ...f, _deleting: undefined } : f)
         }
       }
 
@@ -145,7 +163,7 @@ const currentReducer :Reducer<any> = (state = initialState.current, action) => {
 
 export const reducer :Reducer<OrganizationsState> = (state = initialState, action) => {
   const newCurrent = currentReducer(state.current, action)
-  if (newCurrent != state.current) state = { ...state, current: newCurrent }
+  if (newCurrent !== state.current) state = { ...state, current: newCurrent }
   
   switch (action.type) {
     case 'organizations/list/loading':

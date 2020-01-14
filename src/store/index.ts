@@ -6,6 +6,7 @@ import { reducer as oidc, initialState as oidcInit } from './oidc';
 import { reducer as config, initialState as configInit } from './config';
 import { reducer as search, initialState as searchInit, epics as searchEpics } from './search';
 import { reducer as ui, initialState as uiInit } from './ui';
+import { reducer as toasts, initialState as toastsInit } from './toasts';
 
 import { reducer as organizations, initialState as orgsInit } from './organizations';
 import { combineEpics, createEpicMiddleware } from 'redux-observable';
@@ -16,7 +17,8 @@ const rootReducer = combineReducers({
   oidc,
   search,
   ui,
-  organizations
+  organizations,
+  toasts
 })
 
 export type StoreState = ReturnType<typeof rootReducer>
@@ -26,7 +28,8 @@ const initState :StoreState = {
   config: configInit,
   search: searchInit,
   ui: uiInit,
-  organizations: orgsInit
+  organizations: orgsInit,
+  toasts: toastsInit
 }
 
 const epicMiddleware = createEpicMiddleware()

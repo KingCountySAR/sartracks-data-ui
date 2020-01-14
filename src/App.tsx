@@ -15,12 +15,16 @@ import SearchDrawer from './components/search-drawer';
 import { StoreState } from './store';
 import { ACTION_ROUTE_NAVIGATE } from './store/global-actions';
 import { connect } from 'react-redux';
-import { OidcState, Actions as oidcActions } from './store/oidc';
-import { Actions as uiActions } from './store/ui';
-import { Actions as searchActions } from './store/search';
+import { OidcState, Actions as oidcActions } from './store/oidc'
+import { Actions as uiActions } from './store/ui'
+import { Actions as searchActions } from './store/search'
+import { Actions as toastActions } from './store/toasts'
 import { User } from 'oidc-client';
 
-import pages from './pages';
+import pages from './pages'
+import { Toast } from './store/toasts'
+import { Snackbar } from '@material-ui/core'
+import { Alert } from '@material-ui/lab'
 
 const MainPageInner :React.FC<{oidc: OidcState}> = ({oidc}) => (
   <AuthRoute oidc={oidc} loading='loading user' denied='access denied'>
@@ -41,6 +45,8 @@ interface AppProps {
   isLoadingUser? :boolean
   inDrawer :boolean
   inSearch :boolean
+  toastCount: number
+  currentToast?: Toast
 }
 interface AppActions {
   doSignin: () => void,
@@ -48,11 +54,13 @@ interface AppActions {
   showDrawer: (show :boolean) => void,
   showSearch: (show :boolean) => void
   announceNavigate: (location: Location<any>) => void
+  finishToast: (id: number) => void
 }
 
 
 const App :React.FC<AppProps & AppActions & { location :Location }> = (props) => {
   const { user, isLoadingUser, showDrawer, inDrawer, showSearch, inSearch, doSignin, doSignout, announceNavigate } = props
+  const { currentToast, finishToast } = props
   const [ref, { width }] = useDimensions();
   const fixedDrawer = width >= 768
   const history = useHistory()
@@ -75,6 +83,14 @@ const App :React.FC<AppProps & AppActions & { location :Location }> = (props) =>
             <Route exact path='/admin' component={RestrictedPage} />
           </Route>
         </div>
+        <Snackbar
+          open={!!currentToast}
+          autoHideDuration={currentToast && currentToast.timeout > 0 ? currentToast.timeout : undefined}
+          onClose={() => finishToast(currentToast!.id)}
+          message={currentToast && !currentToast.severity && currentToast.text}>
+          {(currentToast && currentToast.severity) ? 
+            <Alert onClose={() => finishToast(currentToast.id)} severity={currentToast.severity} variant='filled'>{currentToast.text}</Alert> : null}
+        </Snackbar> : null}
         <MuiDrawer anchor="right" style={{maxWidth: '80%'}} open={inSearch} onClose={() => showSearch(false)}>
           <SearchDrawer />
         </MuiDrawer>
@@ -87,7 +103,9 @@ const storeToProps = (store :StoreState) :AppProps => ({
     user: store.oidc.user,
     isLoadingUser: store.oidc.isLoadingUser,
     inDrawer: store.ui.inDrawer,
-    inSearch: store.search.open
+    inSearch: store.search.open,
+    toastCount: store.toasts.items.length,
+    currentToast: store.toasts.items.length ? store.toasts.items[0] : undefined
 })
 
 const dispatchToProps = (dispatch :Dispatch<any>) :AppActions => ({
@@ -95,7 +113,8 @@ const dispatchToProps = (dispatch :Dispatch<any>) :AppActions => ({
   doSignout: () => dispatch(oidcActions.doSignout()),
   showDrawer: (show: boolean) => dispatch(uiActions.showDrawer(show)),
   showSearch: (show: boolean) => dispatch(searchActions.show(show)),
-  announceNavigate: (location: Location<any>) => dispatch({type: ACTION_ROUTE_NAVIGATE, payload: location })
+  announceNavigate: (location: Location<any>) => dispatch({type: ACTION_ROUTE_NAVIGATE, payload: location }),
+  finishToast: (id: number) => dispatch(toastActions.finish(id))
 })
 
 export default withRouter(connect(storeToProps, dispatchToProps)(App))
