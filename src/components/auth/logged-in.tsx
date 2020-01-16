@@ -3,6 +3,8 @@ import { withRouter } from "react-router-dom";
 import { connect } from 'react-redux';
 import { CallbackComponent } from 'redux-oidc';
 import userManager from '../../user-manager';
+import PageContainer from '../page-container';
+import GridPaper from '../grid-paper';
 
 class CallbackPage extends React.Component<{ history: any }> {
   successCallback = () => {
@@ -13,9 +15,11 @@ class CallbackPage extends React.Component<{ history: any }> {
     // just redirect to '/' in both cases
     return (
       <CallbackComponent userManager={userManager} successCallback={this.successCallback} errorCallback={this.successCallback}>
-        <div>
-          Finishing login ...
-        </div>
+        <PageContainer>
+          <GridPaper>
+            Finishing login ...
+          </GridPaper>
+        </PageContainer>
       </CallbackComponent>
     );
   }

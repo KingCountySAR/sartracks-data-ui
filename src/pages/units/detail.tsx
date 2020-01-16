@@ -10,6 +10,7 @@ import { Actions as orgActions, OrganizationStatus } from '../../store/organizat
 import StatusList from './status-types/status-list'
 import StatusDialog from './status-types/status-dialog'
 import DeletePrompt from '../../components/delete-prompt'
+import AuthRoute from '../../components/auth/AuthRoute'
 
 interface UnitPageProps {
   organization: any
@@ -51,7 +52,7 @@ class UnitDetailPage extends React.Component<UnitPageProps & UnitPageActions & {
     const { organization, loading, deleteStatus, saveStatus } = this.props
     const { currentDialog, editObj } = this.state
 
-    return (<PageContainer>
+    return (<AuthRoute><PageContainer>
       <Grid container>
         <Grid item xs={12}>
       <GridPaper>
@@ -82,7 +83,7 @@ class UnitDetailPage extends React.Component<UnitPageProps & UnitPageActions & {
               name={organization && editObj && `${organization.name} ${editObj.name}`} />
           </Grid>
         </Grid>
-  </PageContainer>)
+  </PageContainer></AuthRoute>)
   }
 }
 
@@ -90,9 +91,6 @@ const storeToProps = (store :StoreState) :UnitPageProps => ({
   organization: store.organizations.current,
   loading: !!store.organizations.currentLoading,
   loggedIn: !!store.oidc.user
-    // user: store.oidc.user,
-    // isLoadingUser: store.oidc.isLoadingUser,
-    // inDrawer: store.ui.inDrawer
 })
 
 const dispatchToProps = (dispatch :Dispatch<any>) :UnitPageActions => ({

@@ -90,7 +90,7 @@ const App :React.FC<AppProps & AppActions & { location :Location }> = (props) =>
           message={currentToast && !currentToast.severity && currentToast.text}>
           {(currentToast && currentToast.severity) ? 
             <Alert onClose={() => finishToast(currentToast.id)} severity={currentToast.severity} variant='filled'>{currentToast.text}</Alert> : null}
-        </Snackbar> : null}
+        </Snackbar>
         <MuiDrawer anchor="right" style={{maxWidth: '80%'}} open={inSearch} onClose={() => showSearch(false)}>
           <SearchDrawer />
         </MuiDrawer>

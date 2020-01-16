@@ -4,6 +4,10 @@ import { connect } from "react-redux";
 import userManager from '../../user-manager';
 import { StoreState } from "../../store";
 import { OidcState } from '../../store/oidc';
+import PageContainer from "../page-container";
+import { Alert } from "@material-ui/lab";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faKey } from '@fortawesome/free-solid-svg-icons'
 
 interface ForceLoginProps {
   redirect :string
@@ -30,7 +34,7 @@ class ForceLogin extends Component<ForceLoginProps> {
   }
 
   render() {
-    return 'Redirecting to login page ...';
+    return <PageContainer><Alert icon={<FontAwesomeIcon icon={faKey}/>} variant='filled' severity='info'>Redirecting to login page ...</Alert></PageContainer>
   }
 }
 

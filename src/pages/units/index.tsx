@@ -9,6 +9,7 @@ import { connect } from 'react-redux';
 import { StoreState } from '../../store';
 import { Actions as orgActions } from '../../store/organizations';
 import GridPaper from '../../components/grid-paper'
+import AuthRoute from '../../components/auth/AuthRoute'
 
 
 interface UnitPageProps {
@@ -34,7 +35,7 @@ class UnitsPage extends React.Component<UnitPageProps & UnitPageActions>
     const { organizations, loggedIn } = this.props
     const { list, listLoading } = organizations || {}
 
-    return (<PageContainer>
+    return (<AuthRoute><PageContainer>
       {loggedIn ?
       <GridPaper>
         <Typography variant='h5' component='h3'>Unit List</Typography>
@@ -50,7 +51,7 @@ class UnitsPage extends React.Component<UnitPageProps & UnitPageActions>
         </List>
       </GridPaper>
       : <GridPaper>Loading</GridPaper> }
-  </PageContainer>)
+  </PageContainer></AuthRoute>)
   }
 }
 
